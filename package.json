@@ -1,0 +1,27 @@
+{
+  "name": "testtriple",
+  "version": "1.0.0",
+  "description": "A light wrapper around testdouble with clever improvements",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "jest",
+    "build": "tsc",
+    "clean": "rm -rd lib && rm testtriple-*.tgz",
+    "bundle": "npm pack",
+    "publish": "npm run jest && npm run clean && npm run build && npm publish"
+  },
+  "keywords": [
+    "testdouble"
+  ],
+  "author": "Patrik Stutz",
+  "license": "MIT",
+  "dependencies": {
+    "testdouble": "^3.16.3"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.0.3",
+    "jest": "^27.4.5",
+    "ts-jest": "^27.1.2",
+    "typescript": "^4.5.4"
+  }
+}

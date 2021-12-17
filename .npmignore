@@ -1,0 +1,6 @@
+/src
+/.envrc
+/jest.config.js
+/readme.md
+/tsconfig.json
+/testtriple-*.tgz
