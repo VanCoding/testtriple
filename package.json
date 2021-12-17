@@ -1,6 +1,6 @@
 {
   "name": "testtriple",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A light wrapper around testdouble with clever improvements",
   "main": "lib/index.js",
   "scripts": {
