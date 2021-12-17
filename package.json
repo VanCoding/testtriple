@@ -6,9 +6,8 @@
   "scripts": {
     "test": "jest",
     "build": "tsc",
-    "clean": "rm -rd lib && rm testtriple-*.tgz",
-    "bundle": "npm pack",
-    "publish": "npm run jest && npm run clean && npm run build && npm publish"
+    "clean": "rm -rdf lib && rm -f testtriple-*.tgz",
+    "prepack": "npm run test && npm run clean && npm run build"
   },
   "homepage": "https://github.com/VanCoding/testtriple",
   "repository": {
