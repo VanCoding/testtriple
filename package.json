@@ -10,10 +10,18 @@
     "bundle": "npm pack",
     "publish": "npm run jest && npm run clean && npm run build && npm publish"
   },
+  "homepage": "https://github.com/VanCoding/testtriple",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VanCoding/testtriple.git"
+  },
   "keywords": [
     "testdouble"
   ],
-  "author": "Patrik Stutz",
+  "author": {
+    "name": "Patrik Stutz",
+    "email": "patrik.stutz@gmail.com"
+  },
   "license": "MIT",
   "dependencies": {
     "testdouble": "^3.16.3"
