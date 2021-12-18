@@ -1,6 +1,6 @@
 ## testtriple
 
-A handy little testing library inspired by testdoubles.
+A handy little testing library inspired by testdouble.
 It's main features are:
 
 - easily creating nested mocks
