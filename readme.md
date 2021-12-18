@@ -82,7 +82,7 @@ const bob = mock<Human>({
 console.log(await bob.getAge()); // 10
 ```
 
-### throws(errorToThrow)
+### rejects(errorToThrow)
 
 ```ts
 const eve = mock<Human>({
