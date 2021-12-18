@@ -53,7 +53,7 @@ console.log(bob.father.mother.name); // "helen"
 
 ## mocking function calls
 
-To mock function calls of an object created with `mock({...})` you have to explicitly set the property to function mock created using one of the functions below:
+To mock function calls of an object created with `mock({...})` you have to explicitly set the property to a function mock created using one of the functions below:
 
 ### returns(valueToReturn)
 
