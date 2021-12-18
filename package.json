@@ -1,7 +1,7 @@
 {
   "name": "testtriple",
   "version": "1.0.1",
-  "description": "A light wrapper around testdouble with clever improvements",
+  "description": "A handy little testing library inspired by testdoubles",
   "main": "lib/index.js",
   "scripts": {
     "test": "jest",
@@ -23,7 +23,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "testdouble": "^3.16.3"
+    "utility-types": "^3.10.0"
   },
   "devDependencies": {
     "@types/jest": "^27.0.3",

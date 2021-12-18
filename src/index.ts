@@ -1,5 +1,4 @@
-import * as td from "testdouble";
-export * from "testdouble";
+import { PromiseType } from "utility-types";
 
 export function mock<T extends object, B extends Partial<T> = Partial<T>>(
   values: B = {} as any
@@ -7,6 +6,51 @@ export function mock<T extends object, B extends Partial<T> = Partial<T>>(
   return (values as any) as T;
 }
 
-export function spy<T>() {
-  return td.func<T>();
+type FunctionMock<F extends () => any> = {
+  (...args: Parameters<F>): ReturnType<F>;
+  calls: Parameters<F>[];
+};
+
+export function spy<F extends () => any>(...functions: F[]): F {
+  const calls: Parameters<F>[] = [];
+  let callIndex = -1;
+  const functionMock = function (...args: Parameters<F>): ReturnType<F> {
+    calls.push(args);
+    callIndex++;
+
+    const fn =
+      callIndex < functions.length
+        ? functions[callIndex]
+        : functions[functions.length - 1];
+    if (!fn) return;
+    return fn.apply(null, args);
+  };
+  functionMock.calls = calls;
+  return functionMock as any;
+}
+
+export function returns<F extends () => any>(value: ReturnType<F>) {
+  return spy<F>((() => value) as F);
+}
+export function throws<F extends () => any>(err: any) {
+  return spy<F>(((() => {
+    throw err;
+  }) as any) as F);
+}
+export function resolves<F extends () => Promise<any>>(
+  value: PromiseType<ReturnType<F>>
+) {
+  return spy<F>((() => Promise.resolve(value)) as F);
+}
+export function rejects<F extends () => Promise<any>>(error: any) {
+  return spy<F>((() => Promise.reject(error)) as F);
+}
+
+export function callsOf<F extends (...args: any) => any>(
+  fn: F
+): Parameters<F>[] {
+  const functionMock = (fn as any) as FunctionMock<F>;
+  if (!functionMock || !functionMock.calls)
+    throw Error("argument passed into 'callsOf' is not a function mock");
+  return functionMock.calls;
 }
