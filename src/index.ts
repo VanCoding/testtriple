@@ -6,12 +6,12 @@ export function mock<T extends object, B extends Partial<T> = Partial<T>>(
   return (values as any) as T;
 }
 
-type FunctionMock<F extends () => any> = {
+type FunctionMock<F extends (...args: any) => any> = {
   (...args: Parameters<F>): ReturnType<F>;
   calls: Parameters<F>[];
 };
 
-export function spy<F extends () => any>(...functions: F[]): F {
+export function spy<F extends (...args: any) => any>(...functions: F[]): F {
   const calls: Parameters<F>[] = [];
   let callIndex = -1;
   const functionMock = function (...args: Parameters<F>): ReturnType<F> {
@@ -29,20 +29,20 @@ export function spy<F extends () => any>(...functions: F[]): F {
   return functionMock as any;
 }
 
-export function returns<F extends () => any>(value: ReturnType<F>) {
+export function returns<F extends (...args: any) => any>(value: ReturnType<F>) {
   return spy<F>((() => value) as F);
 }
-export function throws<F extends () => any>(err: any) {
+export function throws<F extends (...args: any) => any>(err: any) {
   return spy<F>(((() => {
     throw err;
   }) as any) as F);
 }
-export function resolves<F extends () => Promise<any>>(
+export function resolves<F extends (...args: any) => Promise<any>>(
   value: PromiseType<ReturnType<F>>
 ) {
   return spy<F>((() => Promise.resolve(value)) as F);
 }
-export function rejects<F extends () => Promise<any>>(error: any) {
+export function rejects<F extends (...args: any) => Promise<any>>(error: any) {
   return spy<F>((() => Promise.reject(error)) as F);
 }
 
