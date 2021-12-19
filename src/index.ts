@@ -1,9 +1,7 @@
 import { PromiseType } from "utility-types";
 
-export function mock<T extends {} | undefined>(
-  values: Partial<Exclude<T, undefined>> = {}
-) {
-  return (values as any) as Exclude<T, undefined>;
+export function mock<T>(values: Partial<Extract<T, {}>> = {}) {
+  return (values as any) as T;
 }
 
 export function spy<T>(

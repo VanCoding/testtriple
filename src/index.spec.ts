@@ -9,6 +9,7 @@ type Human = {
   setName: (name: string) => void;
   mother: Human;
   father: Human;
+  getFather: () => Human;
 };
 
 describe("mock", () => {
@@ -29,6 +30,12 @@ describe("mock", () => {
 
   it("allows zero arguments", () => {
     mock<Human>();
+  });
+
+  it("supports inferred mock inside returns", () => {
+    mock<Human>({
+      getFather: returns(mock()),
+    });
   });
 });
 
