@@ -23,6 +23,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "ts-node": "^10.4.0",
     "utility-types": "^3.10.0"
   },
   "devDependencies": {

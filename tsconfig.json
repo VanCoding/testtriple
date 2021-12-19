@@ -2,7 +2,6 @@
   "compilerOptions": {
     "module": "commonjs",
     "strict": true,
-    "strictNullChecks": false,
     "removeComments": true,
     "outDir": "lib",
     "declaration": true

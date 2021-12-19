@@ -1,4 +1,5 @@
 import { mock, spy, callsOf, returns, throws, resolves, rejects } from ".";
+import { spawnSync } from "child_process";
 
 type Human = {
   name: string;
@@ -98,3 +99,62 @@ describe("callsOf", () => {
     );
   });
 });
+
+describe("type inferrence", () => {
+  it("prevents setting invalid values to mock properties", () => {
+    doesNotCompile(
+      "mock<Human>({name:1})",
+      "Type 'number' is not assignable to type 'string | undefined'"
+    );
+  });
+  it("prevents setting invalid valid to nested mock properties", () => {
+    doesNotCompile(
+      "mock<Human>({father:mock({mother:mock({name:1})})})",
+      "Type 'number' is not assignable to type 'string | undefined'"
+    );
+  });
+  it("prevents setting mocks to non-function mock properties", () => {
+    doesNotCompile(
+      "mock<Human>({name:returns('bob')})",
+      "Argument of type 'string' is not assignable to parameter of type 'never'"
+    );
+  });
+  it("prevents setting an invalid return value for a mock function", () => {
+    doesNotCompile(
+      "mock<Human>({getAge: returns('hello')})",
+      "Argument of type 'string' is not assignable to parameter of type 'number'"
+    );
+  });
+  it("prevents setting an invalid resolve value for a mock function", () => {
+    doesNotCompile(
+      "mock<Human>({getAgeAsync: resolves('hello')})",
+      "Argument of type 'string' is not assignable to parameter of type 'number'"
+    );
+  });
+});
+
+function doesNotCompile(code: string, message: string) {
+  const allCode = `
+  import { mock, spy, callsOf, returns, throws, resolves, rejects } from "./src";
+  type Human = {
+    name: string;
+    birthDate: Date;
+    getAge: () => number;
+    getAgeAsync: () => Promise<number>;
+    setName: (name: string) => void;
+    mother: Human;
+    father: Human;
+  };
+  ${code}
+  `;
+  console.log(allCode);
+  const result = spawnSync("ts-node", [
+    "--project",
+    "tsconfig.json",
+    "--eval",
+    allCode,
+  ]);
+  const output = result.output.join("");
+  console.log(result.error, output);
+  expect(output).toContain(message);
+}

@@ -1,9 +1,9 @@
 import { PromiseType } from "utility-types";
 
-export function mock<T extends object, B extends Partial<T> = Partial<T>>(
-  values: B = {} as any
+export function mock<T extends {} | undefined>(
+  values: Partial<Exclude<T, undefined>> = {}
 ) {
-  return (values as any) as T;
+  return (values as any) as Exclude<T, undefined>;
 }
 
 type FunctionMock<F extends (...args: any) => any> = {
@@ -11,10 +11,12 @@ type FunctionMock<F extends (...args: any) => any> = {
   calls: Parameters<F>[];
 };
 
-export function spy<F extends (...args: any) => any>(...functions: F[]): F {
-  const calls: Parameters<F>[] = [];
+export function spy<T>(
+  ...functions: Extract<T, (...args: any) => any>[]
+): Extract<T, (...args: any) => any> {
+  const calls: any = [];
   let callIndex = -1;
-  const functionMock = function (...args: Parameters<F>): ReturnType<F> {
+  const functionMock = function (...args: any): any {
     calls.push(args);
     callIndex++;
 
@@ -23,27 +25,31 @@ export function spy<F extends (...args: any) => any>(...functions: F[]): F {
         ? functions[callIndex]
         : functions[functions.length - 1];
     if (!fn) return;
-    return fn.apply(null, args);
+    return (fn as any)(...args);
   };
   functionMock.calls = calls;
   return functionMock as any;
 }
 
-export function returns<F extends (...args: any) => any>(value: ReturnType<F>) {
-  return spy<F>((() => value) as F);
+export function returns<T, F = Extract<T, (...args: any) => any>>(
+  value: ReturnType<Extract<T, (...args: any) => any>>
+): T {
+  return spy<F>((() => value) as any) as any;
 }
-export function throws<F extends (...args: any) => any>(err: any) {
+export function throws<T, F = Extract<T, (...args: any) => any>>(err: any): T {
   return spy<F>(((() => {
     throw err;
-  }) as any) as F);
+  }) as any) as any) as any;
 }
-export function resolves<F extends (...args: any) => Promise<any>>(
-  value: PromiseType<ReturnType<F>>
-) {
-  return spy<F>((() => Promise.resolve(value)) as F);
+export function resolves<T, F = Extract<T, (...args: any) => any>>(
+  value: PromiseType<ReturnType<Extract<T, (...args: any) => any>>>
+): T {
+  return spy<F>((() => Promise.resolve(value)) as any) as any;
 }
-export function rejects<F extends (...args: any) => Promise<any>>(error: any) {
-  return spy<F>((() => Promise.reject(error)) as F);
+export function rejects<T, F = Extract<T, (...args: any) => any>>(
+  error: any
+): T {
+  return spy<F>((() => Promise.reject(error)) as any) as any;
 }
 
 export function callsOf<F extends (...args: any) => any>(
