@@ -1,6 +1,6 @@
 {
   "name": "testtriple",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "A handy little testing library inspired by testdoubles",
   "main": "lib/index.js",
   "scripts": {
