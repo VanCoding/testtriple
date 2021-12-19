@@ -1,8 +1,11 @@
 import { PromiseType } from "utility-types";
 
-export function mock<T extends object, B extends Partial<T> = Partial<T>>(
-  values: B = {} as any
-) {
+export function mock<
+  T,
+  B extends T extends {} ? Partial<T> : never = T extends {}
+    ? Partial<T>
+    : never
+>(values: B = {} as any) {
   return (values as any) as T;
 }
 
@@ -22,7 +25,7 @@ export function spy<F extends (...args: any) => any>(...functions: F[]): F {
       callIndex < functions.length
         ? functions[callIndex]
         : functions[functions.length - 1];
-    if (!fn) return;
+    if (!fn) return undefined as ReturnType<F>;
     return fn.apply(null, args);
   };
   functionMock.calls = calls;
