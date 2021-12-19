@@ -98,6 +98,14 @@ describe("callsOf", () => {
       "argument passed into 'callsOf' is not a function mock"
     );
   });
+
+  it("can handle optional methods", () => {
+    const bob = mock<{ optionalMethod?: () => void }>({
+      optionalMethod: spy(),
+    });
+
+    expect(callsOf(bob.optionalMethod)).toStrictEqual([]);
+  });
 });
 
 describe("type inferrence", () => {

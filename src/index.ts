@@ -6,11 +6,6 @@ export function mock<T extends {} | undefined>(
   return (values as any) as Exclude<T, undefined>;
 }
 
-type FunctionMock<F extends (...args: any) => any> = {
-  (...args: Parameters<F>): ReturnType<F>;
-  calls: Parameters<F>[];
-};
-
 export function spy<T>(
   ...functions: Extract<T, (...args: any) => any>[]
 ): Extract<T, (...args: any) => any> {
@@ -52,11 +47,11 @@ export function rejects<T, F = Extract<T, (...args: any) => any>>(
   return spy<F>((() => Promise.reject(error)) as any) as any;
 }
 
-export function callsOf<F extends (...args: any) => any>(
+export function callsOf<F>(
   fn: F
-): Parameters<F>[] {
-  const functionMock = (fn as any) as FunctionMock<F>;
+): Parameters<Extract<F, (...args: any) => any>> {
+  const functionMock = fn as any;
   if (!functionMock || !functionMock.calls)
     throw Error("argument passed into 'callsOf' is not a function mock");
-  return functionMock.calls;
+  return functionMock.calls as any;
 }
