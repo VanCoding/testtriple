@@ -50,7 +50,7 @@ describe("spy", () => {
     const bob = mock<Human>({
       getAgeAsync: rejects("holy fuck"),
     });
-    expect(bob.getAgeAsync).rejects.toThrow("holy fuck");
+    await expect(bob.getAgeAsync).rejects.toEqual("holy fuck");
   });
   it("chains", () => {
     const results = [10, 20, 30, 40];
