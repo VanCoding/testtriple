@@ -121,18 +121,68 @@ console.log(bob.getAge()); // throws "he's dead, jim!"
 
 ## verifying calls
 
-testtriple doesn't do any assertions. But it gives you access to function calls and their parameters using `callsOf(functionMock)`. You can then assert these calls using the test runner of your choice. Here's an example using jest:
+testtriple doesn't do any assertions. But it gives you access to function calls and their parameters using `callsOf`, `callsOfAll` and `callOrderOf`. You can then assert these calls using the test runner of your choice.
+
+### callsOf(fn)
+
+Used to verify the call order and arguments of a single function.
 
 ```ts
-const bob = mock<Human>({
-  setName: spy(),
+const math = mock<Calulator>({
+  add: spy(),
+  multiply: spy(),
 });
 
-bob.setName("carl");
-bob.setName("ben");
-bob.setName("steve");
+math.add(1, 2);
+math.multiply(2, 2);
+math.add(3, 8);
 
-expect(callsOf(bob.setName)).toStrictEqual([["carl"], ["ben"], ["steve"]]);
+expect(callsOf(math.add)).toStrictEqual([
+  [1, 2],
+  [3, 8],
+]);
+```
+
+### callsOfAll(...fns)
+
+Used to verify the call order and arguments across multiple functions.
+
+```ts
+const math = mock<Calulator>({
+  add: spy(),
+  multiply: spy(),
+});
+
+math.add(1, 2);
+math.multiply(2, 2);
+math.add(3, 8);
+
+expect(callsOf(math.add, math.multiply)).toStrictEqual([
+  [math.add, 1, 2],
+  [math.multiply, 2, 2],
+  [math.add, 3, 8],
+]);
+```
+
+### callOrderOf(...fns)
+
+Used to verify the call order without arguments across multiple functions.
+
+```ts
+const math = mock<Calulator>({
+  add: spy(),
+  multiply: spy(),
+});
+
+math.add(1, 2);
+math.multiply(2, 2);
+math.add(3, 8);
+
+expect(callOrderOf(math.add, math.multiply)).toStrictEqual([
+  math.add,
+  math.multiply,
+  math.add,
+]);
 ```
 
 ## why is it called `testtriple`
