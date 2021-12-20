@@ -47,6 +47,14 @@ describe("mock", () => {
       getFather: returns(mock()),
     });
   });
+
+  it("sets the name of functions correclty", () => {
+    const bob = mock<Human>({
+      getAge: returns(10),
+    });
+
+    expect(bob.getAge.name).toBe("getAge");
+  });
 });
 
 describe("spy", () => {

@@ -3,6 +3,11 @@ import { PromiseType } from "utility-types";
 let NEXT_CALL_ID = 0;
 
 export function mock<T>(values: Partial<Extract<T, {}>> = {}) {
+  for (const key in values) {
+    if (typeof values[key] === "function") {
+      Object.defineProperty(values[key], "name", { value: key });
+    }
+  }
   return (values as any) as T;
 }
 
