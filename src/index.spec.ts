@@ -1,4 +1,14 @@
-import { mock, spy, callsOf, returns, throws, resolves, rejects } from ".";
+import {
+  mock,
+  spy,
+  callsOf,
+  returns,
+  throws,
+  resolves,
+  rejects,
+  callOrderOf,
+  callsOfAll,
+} from ".";
 import { spawnSync } from "child_process";
 
 type Human = {
@@ -112,6 +122,60 @@ describe("callsOf", () => {
     });
 
     expect(callsOf(bob.optionalMethod)).toStrictEqual([]);
+  });
+});
+
+describe("callsOf, callsOfAll, callOrderOf", () => {
+  it("returns the correct call orders for case 1", () => {
+    const { a, b, c } = mock<{
+      a: () => void;
+      b: () => void;
+      c: () => void;
+    }>({
+      a: spy(),
+      b: spy(),
+      c: spy(),
+    });
+    a();
+    b();
+    c();
+    b();
+    a();
+
+    expect(callsOf(a)).toStrictEqual([[], []]);
+    expect(callsOf(b)).toStrictEqual([[], []]);
+    expect(callsOf(c)).toStrictEqual([[]]);
+    expect(callsOfAll(a, b, c)).toStrictEqual([[a], [b], [c], [b], [a]]);
+    expect(callsOfAll(a, c)).toStrictEqual([[a], [c], [a]]);
+    expect(callOrderOf(a, b, c)).toStrictEqual([a, b, c, b, a]);
+    expect(callOrderOf(a, b)).toStrictEqual([a, b, b, a]);
+  });
+
+  it("returns the correct call orders for case 1", () => {
+    const { a, b } = mock<{
+      a: (x: string) => void;
+      b: (y: number, z: boolean) => void;
+    }>({
+      a: spy(),
+      b: spy(),
+    });
+    a("hello");
+    b(1, true);
+    a("world");
+    b(2, false);
+
+    expect(callsOf(a)).toStrictEqual([["hello"], ["world"]]);
+    expect(callsOf(b)).toStrictEqual([
+      [1, true],
+      [2, false],
+    ]);
+    expect(callsOfAll(a, b)).toStrictEqual([
+      [a, "hello"],
+      [b, 1, true],
+      [a, "world"],
+      [b, 2, false],
+    ]);
+    expect(callOrderOf(a, b)).toStrictEqual([a, b, a, b]);
   });
 });
 

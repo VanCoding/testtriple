@@ -1,5 +1,7 @@
 import { PromiseType } from "utility-types";
 
+let NEXT_CALL_ID = 0;
+
 export function mock<T>(values: Partial<Extract<T, {}>> = {}) {
   return (values as any) as T;
 }
@@ -10,7 +12,13 @@ export function spy<T>(
   const calls: any = [];
   let callIndex = -1;
   const functionMock = function (...args: any): any {
-    calls.push(args);
+    const call = [...args];
+    Object.defineProperty(call as any, "id", {
+      enumerable: false,
+      writable: false,
+      value: NEXT_CALL_ID++,
+    });
+    calls.push(call);
     callIndex++;
 
     const fn =
@@ -20,7 +28,11 @@ export function spy<T>(
     if (!fn) return;
     return (fn as any)(...args);
   };
-  functionMock.calls = calls;
+  Object.defineProperty(functionMock as any, "calls", {
+    enumerable: false,
+    writable: false,
+    value: calls,
+  });
   return functionMock as any;
 }
 
@@ -52,4 +64,30 @@ export function callsOf<F>(
   if (!functionMock || !functionMock.calls)
     throw Error("argument passed into 'callsOf' is not a function mock");
   return functionMock.calls as any;
+}
+
+function getOrderedCalls(...functions: Array<(...args: any) => any>) {
+  return functions
+    .map((fn) =>
+      callsOf(fn).map((call: any) => ({
+        id: call.id,
+        function: fn,
+        arguments: call,
+      }))
+    )
+    .flat()
+    .sort((a, b) => (a as any).id - (b as any).id);
+}
+
+export function callsOfAll(...functions: Array<(...args: any) => any>) {
+  return getOrderedCalls(...functions).map((call) => [
+    call.function,
+    ...call.arguments,
+  ]);
+}
+
+export function callOrderOf(
+  ...functions: Array<(...args: any) => any>
+): Array<(...args: any) => any> {
+  return getOrderedCalls(...functions).map((call) => call.function);
 }
