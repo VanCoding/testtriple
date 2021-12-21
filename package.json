@@ -15,6 +15,7 @@
     "url": "git+https://github.com/VanCoding/testtriple.git"
   },
   "keywords": [
+    "typescript",
     "testdouble",
     "substitute",
     "mock",
