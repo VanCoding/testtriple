@@ -15,7 +15,16 @@
     "url": "git+https://github.com/VanCoding/testtriple.git"
   },
   "keywords": [
-    "testdouble"
+    "testdouble",
+    "substitute",
+    "mock",
+    "mocking",
+    "test",
+    "testing",
+    "tdd",
+    "stub",
+    "spy",
+    "faking"
   ],
   "author": {
     "name": "Patrik Stutz",
