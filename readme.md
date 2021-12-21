@@ -1,6 +1,6 @@
 ## testtriple
 
-A handy little testing library inspired by [testdouble](https://github.com/testdouble/testdouble.js) and [@fluffy-spoon/substitute](https://github.com/ffMathy/FluffySpoon.JavaScript.Testing.Faking).
+A handy little mocking library for inspired by [testdouble](https://github.com/testdouble/testdouble.js) and [@fluffy-spoon/substitute](https://github.com/ffMathy/FluffySpoon.JavaScript.Testing.Faking).
 It's main features are:
 
 - easily creating nested mocks

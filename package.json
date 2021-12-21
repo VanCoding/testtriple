@@ -1,7 +1,7 @@
 {
   "name": "testtriple",
   "version": "2.2.0",
-  "description": "A handy little testing library inspired by testdoubles",
+  "description": "A handy little mocking library inspired by testdouble and @fluffy-spoon/substitute",
   "main": "lib/index.js",
   "scripts": {
     "test": "jest",
