@@ -185,6 +185,43 @@ expect(callOrderOf(math.add, math.multiply)).toStrictEqual([
 ]);
 ```
 
+## comparison to `testdouble` and `@fluffy-spoon/substitute`
+
+While testtriple was inspired by the mentioned libraries, it does not mean that it focuses on the same core features. Instead, I tried to address some of weaknesses in those libraries. Specifically the creation of nested mocks in one go, without specifying the types for everything, and infer them instead. That's why the quick example features this functionality.
+
+Doing the same in `@fluffy-spoon/substitute` would look like this:
+
+```ts
+const bob = Substitute.for<Human>();
+const father = Substitute.for<Human>();
+const mother = Substitue.for<Human>();
+mother.name.returns("helen");
+mother.getAge().returns(90);
+father.birthDate.returns(new Date(1970, 1, 1));
+father.mother.returns(mother);
+bob.father.returns(father);
+```
+
+While it's technically less lines of code, I find it incredibly hard to read. It gets even harder to read, when the type of sub-objects is not importable. Then it would look like this:
+
+```ts
+const bob = Substitute.for<Human>();
+const father = Substitute.for<Human["father"]>();
+const mother = Substitue.for<Human["father"]["mother"]>();
+```
+
+So, constructing such nested mocks is clearly the core feature of testtriple.
+Everything else is kept to a minimum, because other libraries already do it very well.
+
+Assertions are a good example of this. Both testtouble and substitute provide some assertion functions, while testtriple does not. testtriple only gives you some functions to access the order and parameters of function calls and it's up to you how you assert that this data is correct. But for most cases, testtriple coupled with an assertion library should be able to do the job very well.
+
+### So when to use what?
+
+- Do you want to conveniently create complex, nested mocks with as readable code as possible? -> testtriple
+- Do you want to have some more advanced functionality to verify function calls on mocks? -> testdouble/substitute
+
+In every case you'll need some additional assertion library or assertion tools of your testrunner. With testtriple more that with the others.
+
 ## why is it called `testtriple`
 
 I was lazy and just took the word `double` from `testdouble`, and made it `triple` instead. But I'm sure you've already got that :D
