@@ -1,6 +1,14 @@
 import { PromiseType } from "utility-types";
 
+type FunctionCall = {
+  id: number;
+  function: (...args: any) => any;
+  arguments: any[];
+  instance: any;
+};
+
 let NEXT_CALL_ID = 0;
+let calls: WeakMap<(...args: any) => any, FunctionCall[]> = new WeakMap();
 
 export function mock<T>(values: Partial<Extract<T, {}>> = {}) {
   for (const key in values) {
@@ -14,17 +22,15 @@ export function mock<T>(values: Partial<Extract<T, {}>> = {}) {
 export function spy<T>(
   ...functions: Extract<T, (...args: any) => any>[]
 ): Extract<T, (...args: any) => any> {
-  const calls: any = [];
-  let callIndex = -1;
-  const functionMock = function (...args: any): any {
-    const call = [...args];
-    Object.defineProperty(call as any, "id", {
-      enumerable: false,
-      writable: false,
-      value: NEXT_CALL_ID++,
+  const functionCalls: FunctionCall[] = [];
+  const functionMock = function (this: any, ...args: any): any {
+    const callIndex = functionCalls.length;
+    functionCalls.push({
+      arguments: [...args],
+      function: functionMock,
+      id: NEXT_CALL_ID++,
+      instance: this,
     });
-    calls.push(call);
-    callIndex++;
 
     const fn =
       callIndex < functions.length
@@ -33,11 +39,7 @@ export function spy<T>(
     if (!fn) return;
     return (fn as any)(...args);
   };
-  Object.defineProperty(functionMock as any, "calls", {
-    enumerable: false,
-    writable: false,
-    value: calls,
-  });
+  calls.set(functionMock, functionCalls);
   return functionMock as any;
 }
 
@@ -62,26 +64,24 @@ export function rejects<T, F = Extract<T, (...args: any) => any>>(
   return spy<F>((() => Promise.reject(error)) as any) as any;
 }
 
+function getFunctionCalls(fn: (...args: any) => any) {
+  const functionCalls = calls.get(fn as any);
+  if (!functionCalls)
+    throw Error("argument passed into 'callsOf' is not a function mock");
+  return functionCalls;
+}
+
 export function callsOf<F>(
   fn: F
 ): Parameters<Extract<F, (...args: any) => any>> {
-  const functionMock = fn as any;
-  if (!functionMock || !functionMock.calls)
-    throw Error("argument passed into 'callsOf' is not a function mock");
-  return functionMock.calls as any;
+  return getFunctionCalls(fn as any).map((call) => call.arguments) as any;
 }
 
 function getOrderedCalls(...functions: Array<(...args: any) => any>) {
   return functions
-    .map((fn) =>
-      callsOf(fn).map((call: any) => ({
-        id: call.id,
-        function: fn,
-        arguments: call,
-      }))
-    )
+    .map(getFunctionCalls)
     .flat()
-    .sort((a, b) => (a as any).id - (b as any).id);
+    .sort((a, b) => a.id - (b as any).id);
 }
 
 export function callsOfAll(...functions: Array<(...args: any) => any>) {
