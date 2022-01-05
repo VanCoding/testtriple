@@ -39,6 +39,22 @@ export function spy<T>(
     if (!fn) return;
     return (fn as any)(...args);
   };
+  Object.defineProperty(functionMock, "getMockName", {
+    get: () => () => functionMock.name,
+    enumerable: false,
+  });
+  Object.defineProperty(functionMock, "mock", {
+    get: () => ({
+      calls: callsOf(functionMock),
+      invocationCallOrder: getFunctionCalls(functionMock).map((fn) => fn.id),
+      instances: getFunctionCalls(functionMock).map((fn) => fn.instance),
+    }),
+    enumerable: false,
+  });
+  Object.defineProperty(functionMock, "_isMockFunction", {
+    get: () => true,
+    enumerable: false,
+  });
   calls.set(functionMock, functionCalls);
   return functionMock as any;
 }

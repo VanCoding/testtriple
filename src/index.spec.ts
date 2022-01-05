@@ -245,3 +245,19 @@ function doesNotCompile(code: string, message: string) {
   console.log(result.error, output);
   expect(output).toContain(message);
 }
+
+describe("jest integration", () => {
+  it("toHaveBeenCalled works", () => {
+    const bob = mock<Human>({ getAge: spy(), setName: spy() });
+    bob.setName("a");
+    bob.setName("b");
+    bob.setName("c");
+
+    expect(bob.setName).toHaveBeenCalledTimes(3);
+    expect(bob.setName).toHaveBeenNthCalledWith(2, "b");
+    expect(bob.setName).toHaveBeenLastCalledWith("c");
+    expect(bob.setName).toHaveBeenCalledWith("b");
+    expect(bob.setName).not.toHaveBeenCalledWith("d");
+    expect(bob.getAge).not.toHaveBeenCalled();
+  });
+});
