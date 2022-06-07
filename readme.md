@@ -9,6 +9,10 @@ It's main features are:
 
 testtriple completely focuses on mocking and leaves assertions to your test runner of choice.
 
+## installation
+
+`npm install testtriple`
+
 ## quick example
 
 ```ts
