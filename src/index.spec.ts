@@ -185,6 +185,17 @@ describe("callsOf, callsOfAll, callOrderOf", () => {
     ]);
     expect(callOrderOf(a, b)).toStrictEqual([a, b, a, b]);
   });
+
+  it("infers the correct call type", () => {
+    const fn = spy<(one: string, two: number) => void>();
+    fn("1", 1);
+    fn("2", 2);
+
+    const firstArgOfSecondCall: string = callsOf(fn)[1][0];
+    const secondArgOfFirstCall: number = callsOf(fn)[0][1];
+    expect(firstArgOfSecondCall).toBe("2");
+    expect(secondArgOfFirstCall).toBe(1);
+  });
 });
 
 describe("type inferrence", () => {
@@ -216,6 +227,16 @@ describe("type inferrence", () => {
     doesNotCompile(
       "mock<Human>({getAgeAsync: resolves('hello')})",
       "Argument of type 'string' is not assignable to parameter of type 'number'"
+    );
+  });
+
+  it("correctly detects callsOf type", () => {
+    doesNotCompile(
+      `
+      const bob = mock<Human>({setName: spy()});
+      const name: number = callsOf(bob.setName)[0][0]
+    `,
+      "Type 'string' is not assignable to type 'number'"
     );
   });
 });

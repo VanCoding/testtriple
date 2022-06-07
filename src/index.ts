@@ -16,7 +16,7 @@ export function mock<T>(values: Partial<Extract<T, {}>> = {}) {
       Object.defineProperty(values[key], "name", { value: key });
     }
   }
-  return (values as any) as T;
+  return values as any as T;
 }
 
 export function spy<T>(
@@ -49,9 +49,9 @@ export function returns<T, F = Extract<T, (...args: any) => any>>(
   return spy<F>((() => value) as any) as any;
 }
 export function throws<T, F = Extract<T, (...args: any) => any>>(err: any): T {
-  return spy<F>(((() => {
+  return spy<F>((() => {
     throw err;
-  }) as any) as any) as any;
+  }) as any as any) as any;
 }
 export function resolves<T, F = Extract<T, (...args: any) => any>>(
   value: PromiseType<ReturnType<Extract<T, (...args: any) => any>>>
@@ -73,7 +73,7 @@ function getFunctionCalls(fn: (...args: any) => any) {
 
 export function callsOf<F>(
   fn: F
-): Parameters<Extract<F, (...args: any) => any>> {
+): Parameters<Extract<F, (...args: any) => any>>[] {
   return getFunctionCalls(fn as any).map((call) => call.arguments) as any;
 }
 
