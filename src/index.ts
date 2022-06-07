@@ -44,9 +44,11 @@ export function spy<T>(
 }
 
 export function returns<T, F = Extract<T, (...args: any) => any>>(
-  value: ReturnType<Extract<T, (...args: any) => any>>
+  ...args: ReturnType<Extract<T, (...args: any) => any>> extends void
+    ? []
+    : [ReturnType<Extract<T, (...args: any) => any>>]
 ): T {
-  return spy<F>((() => value) as any) as any;
+  return spy<F>((() => args[0]) as any) as any;
 }
 export function throws<T, F = Extract<T, (...args: any) => any>>(err: any): T {
   return spy<F>((() => {
@@ -54,9 +56,13 @@ export function throws<T, F = Extract<T, (...args: any) => any>>(err: any): T {
   }) as any as any) as any;
 }
 export function resolves<T, F = Extract<T, (...args: any) => any>>(
-  value: PromiseType<ReturnType<Extract<T, (...args: any) => any>>>
+  ...args: PromiseType<
+    ReturnType<Extract<T, (...args: any) => any>>
+  > extends void
+    ? []
+    : [PromiseType<ReturnType<Extract<T, (...args: any) => any>>>]
 ): T {
-  return spy<F>((() => Promise.resolve(value)) as any) as any;
+  return spy<F>((() => Promise.resolve(args[0])) as any) as any;
 }
 export function rejects<T, F = Extract<T, (...args: any) => any>>(
   error: any
