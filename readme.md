@@ -12,6 +12,8 @@ testtriple completely focuses on mocking and leaves assertions to your test runn
 ## quick example
 
 ```ts
+import { mock, returns } from "testtriple";
+
 type Human = {
   name: string;
   birthDate: Date;
@@ -41,6 +43,8 @@ console.log(bob.father.mother.getAge()); // 90
 You can use the `mock<T>({...[subset of T]...})` function to create an object that only has some values set, but pretends to be a complete object. This can also be nested as deep as desired, whith all types being inferred.
 
 ```ts
+import { mock } from "testtriple";
+
 const bob = mock<Human>({
   father: mock({
     mother: mock({
@@ -58,6 +62,8 @@ To mock function calls of an object created with `mock({...})` you have to expli
 ### returns(valueToReturn)
 
 ```ts
+import { mock, returns } from "testtriple";
+
 const bob = mock<Human>({
   getAge: returns(10),
 });
@@ -67,6 +73,8 @@ console.log(bob.getAge()); // 10
 ### throws(errorToThrow)
 
 ```ts
+import { mock, throws } from "testtriple";
+
 const eve = mock<Human>({
   getAge: throws("You don't ask the age of a women!"),
 });
@@ -76,6 +84,8 @@ console.log(eve.getAge()); // throws "You don't ask the age of a women!"
 ### resolves(valueToResolve)
 
 ```ts
+import { mock, resolves } from "testtriple";
+
 const bob = mock<Human>({
   getAge: resolves(10),
 });
@@ -85,6 +95,8 @@ console.log(await bob.getAge()); // 10
 ### rejects(errorToThrow)
 
 ```ts
+import { mock, rejects } from "testtriple";
+
 const eve = mock<Human>({
   getAge: rejects("You don't ask the age of a women!"),
 });
@@ -96,6 +108,8 @@ console.log(await eve.getAge()); // // throws "You don't ask the age of a women!
 This is the basic function that's used by all function mockers above. It takes one or more mimick functions. On every call of the original function, the next mimick function get's called and it's return value returned.
 
 ```ts
+import { mock, spy } from "testtriple";
+
 const bob = mock<Human>({
   getAge: spy(
     () => 10,
@@ -111,6 +125,8 @@ console.log(bob.getAge()); // 30
 It can also be used to chain `returns`,`throws`,`resolves` and `rejects`
 
 ```ts
+import { mock, spy, returns, resolves, throws } from "testtriple";
+
 const bob = mock<Human>({
   getAge: spy(returns(10), resolves(20), throws("he's dead, jim!")),
 });
@@ -128,6 +144,8 @@ testtriple doesn't do any assertions. But it gives you access to function calls 
 Used to verify the call order and arguments of a single function.
 
 ```ts
+import { mock, spy, callsOf } from "testtriple";
+
 const math = mock<Calulator>({
   add: spy(),
   multiply: spy(),
@@ -148,6 +166,8 @@ expect(callsOf(math.add)).toStrictEqual([
 Used to verify the call order and arguments across multiple functions.
 
 ```ts
+import { mock, spy, callsOfAll } from "testtriple";
+
 const math = mock<Calulator>({
   add: spy(),
   multiply: spy(),
@@ -157,7 +177,7 @@ math.add(1, 2);
 math.multiply(2, 2);
 math.add(3, 8);
 
-expect(callsOf(math.add, math.multiply)).toStrictEqual([
+expect(callsOfAll(math.add, math.multiply)).toStrictEqual([
   [math.add, 1, 2],
   [math.multiply, 2, 2],
   [math.add, 3, 8],
@@ -169,6 +189,8 @@ expect(callsOf(math.add, math.multiply)).toStrictEqual([
 Used to verify the call order without arguments across multiple functions.
 
 ```ts
+import { mock, spy, callOrderOf } from "testtriple";
+
 const math = mock<Calulator>({
   add: spy(),
   multiply: spy(),
