@@ -2,6 +2,7 @@
   "compilerOptions": {
     "module": "commonjs",
     "strict": true,
+    "exactOptionalPropertyTypes": true,
     "removeComments": true,
     "outDir": "lib",
     "declaration": true

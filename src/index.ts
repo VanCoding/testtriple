@@ -10,18 +10,22 @@ type FunctionCall = {
 let NEXT_CALL_ID = 0;
 let calls: WeakMap<(...args: any) => any, FunctionCall[]> = new WeakMap();
 
+type ExtractOrVoid<T, Target> = Extract<T, Target> extends never
+  ? void
+  : Extract<T, Target>;
+
 export function mock<T>(values: Partial<Extract<T, {}>> = {}) {
   for (const key in values) {
     if (typeof values[key] === "function") {
       Object.defineProperty(values[key], "name", { value: key });
     }
   }
-  return values as any as T;
+  return values as ExtractOrVoid<T, Record<any, any>>;
 }
 
 export function spy<T>(
   ...functions: Extract<T, (...args: any) => any>[]
-): Extract<T, (...args: any) => any> {
+): ExtractOrVoid<T, (...args: any) => any> {
   const functionCalls: FunctionCall[] = [];
   const functionMock = function (this: any, ...args: any): any {
     const callIndex = functionCalls.length;
@@ -43,31 +47,29 @@ export function spy<T>(
   return functionMock as any;
 }
 
-export function returns<T, F = Extract<T, (...args: any) => any>>(
+export function returns<T>(
   ...args: ReturnType<Extract<T, (...args: any) => any>> extends void
     ? []
     : [ReturnType<Extract<T, (...args: any) => any>>]
-): T {
-  return spy<F>((() => args[0]) as any) as any;
+): Extract<T, (...args: any) => any> {
+  return spy<T>((() => args[0]) as any) as any;
 }
-export function throws<T, F = Extract<T, (...args: any) => any>>(err: any): T {
-  return spy<F>((() => {
+export function throws<T>(err: any): Extract<T, (...args: any) => any> {
+  return spy<T>((() => {
     throw err;
   }) as any as any) as any;
 }
-export function resolves<T, F = Extract<T, (...args: any) => any>>(
+export function resolves<T>(
   ...args: PromiseType<
     ReturnType<Extract<T, (...args: any) => any>>
   > extends void
     ? []
     : [PromiseType<ReturnType<Extract<T, (...args: any) => any>>>]
-): T {
-  return spy<F>((() => Promise.resolve(args[0])) as any) as any;
+): Extract<T, (...args: any) => any> {
+  return spy<T>((() => Promise.resolve(args[0])) as any) as any;
 }
-export function rejects<T, F = Extract<T, (...args: any) => any>>(
-  error: any
-): T {
-  return spy<F>((() => Promise.reject(error)) as any) as any;
+export function rejects<T>(error: any): Extract<T, (...args: any) => any> {
+  return spy<T>((() => Promise.reject(error)) as any) as any;
 }
 
 function getFunctionCalls(fn: (...args: any) => any) {

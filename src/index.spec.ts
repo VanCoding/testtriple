@@ -112,6 +112,24 @@ describe("spy", () => {
     });
     expect(bob.getAge()).toBeUndefined();
   });
+  it("returns deeply nested as well", () => {
+    mock<Human>({
+      getFather: returns(
+        mock({
+          getFather: returns(
+            mock({
+              getAge: returns(1),
+            })
+          ),
+        })
+      ),
+      father: mock({
+        father: mock({
+          getAge: returns(1),
+        }),
+      }),
+    });
+  });
 });
 
 describe("callsOf", () => {
@@ -212,20 +230,19 @@ describe("type inferrence", () => {
   it("prevents setting invalid values to mock properties", () => {
     doesNotCompile(
       "mock<Human>({name:1})",
-      "Type 'number' is not assignable to type 'string | undefined'"
+      "Type 'number' is not assignable to type 'string'"
     );
   });
   it("prevents setting invalid valid to nested mock properties", () => {
     doesNotCompile(
       "mock<Human>({father:mock({mother:mock({name:1})})})",
-      "Type 'number' is not assignable to type 'string | undefined'"
+      "Type 'number' is not assignable to type 'string'"
     );
   });
-  it.skip("prevents setting mocks to non-function mock properties", () => {
-    //TODO make this work!
+  it("prevents setting mocks to non-function mock properties", () => {
     doesNotCompile(
       "mock<Human>({name:spy()})",
-      "Argument of type 'string' is not assignable to parameter of type 'never'"
+      "Type 'void' is not assignable to type 'string | undefined'"
     );
   });
   it("prevents setting an invalid return value for a mock function", () => {
