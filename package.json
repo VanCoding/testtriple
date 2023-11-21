@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "jest",
-    "build": "tsc",
+    "build": "tsc && rm lib/*.spec.js",
     "clean": "rm -rdf lib && rm -f testtriple-*.tgz",
     "prepack": "npm run test && npm run clean && npm run build"
   },
