@@ -23,7 +23,7 @@ export function mock<T>(values: Partial<Extract<T, {}>> = {}) {
   return values as ExtractOrVoid<T, Record<any, any>>;
 }
 
-export function spy<T>(
+export function spy<T = () => void>(
   ...functions: Extract<T, (...args: any) => any>[]
 ): ExtractOrVoid<T, (...args: any) => any> {
   const functionCalls: FunctionCall[] = [];

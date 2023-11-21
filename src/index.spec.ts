@@ -130,6 +130,10 @@ describe("spy", () => {
       }),
     });
   });
+  it("spy defaults to function without arguments returning nothing", () => {
+    const fn = spy();
+    fn();
+  });
 });
 
 describe("callsOf", () => {
