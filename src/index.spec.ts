@@ -8,6 +8,7 @@ import {
   rejects,
   callOrderOf,
   callsOfAll,
+  callDetailsOf,
 } from ".";
 import { spawnSync } from "child_process";
 
@@ -227,6 +228,25 @@ describe("callsOf, callsOfAll, callOrderOf", () => {
     const secondArgOfFirstCall: number = callsOf(fn)[0][1];
     expect(firstArgOfSecondCall).toBe("2");
     expect(secondArgOfFirstCall).toBe(1);
+  });
+});
+
+describe("callDetailsOf", () => {
+  it("returns the correct call details", () => {
+    const fn = spy();
+    fn();
+    fn();
+    fn();
+    const details = callDetailsOf(fn);
+    expect(details.called).toBe(true);
+    expect(details.callCount).toBe(3);
+  });
+
+  it("returns the correct call details for a function that was never called", () => {
+    const fn = spy();
+    const details = callDetailsOf(fn);
+    expect(details.called).toBe(false);
+    expect(details.callCount).toBe(0);
   });
 });
 

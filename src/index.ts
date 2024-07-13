@@ -104,3 +104,16 @@ export function callOrderOf(
 ): Array<(...args: any) => any> {
   return getOrderedCalls(...functions).map((call) => call.function);
 }
+
+type Details = {
+  called: boolean;
+  callCount: number;
+};
+
+export function callDetailsOf(fn: (...args: any) => any): Details {
+  const details = callsOf(fn);
+  return {
+    called: details.length > 0,
+    callCount: details.length,
+  };
+}
