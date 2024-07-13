@@ -1,14 +1,16 @@
 import { PromiseType } from "utility-types";
 
+type AnyFunction = (...args: any[]) => any;
+
 type FunctionCall = {
   id: number;
-  function: (...args: any) => any;
+  function: AnyFunction;
   arguments: any[];
   instance: any;
 };
 
 let NEXT_CALL_ID = 0;
-let calls: WeakMap<(...args: any) => any, FunctionCall[]> = new WeakMap();
+let calls: WeakMap<AnyFunction, FunctionCall[]> = new WeakMap();
 
 type ExtractOrVoid<T, Target> = Extract<T, Target> extends never
   ? void
@@ -24,8 +26,8 @@ export function mock<T>(values: Partial<Extract<T, {}>> = {}) {
 }
 
 export function spy<T = () => void>(
-  ...functions: Extract<T, (...args: any) => any>[]
-): ExtractOrVoid<T, (...args: any) => any> {
+  ...functions: Extract<T, AnyFunction>[]
+): ExtractOrVoid<T, AnyFunction> {
   const functionCalls: FunctionCall[] = [];
   const functionMock = function (this: any, ...args: any): any {
     const callIndex = functionCalls.length;
@@ -48,60 +50,56 @@ export function spy<T = () => void>(
 }
 
 export function returns<T>(
-  ...args: ReturnType<Extract<T, (...args: any) => any>> extends void
+  ...args: ReturnType<Extract<T, AnyFunction>> extends void
     ? []
-    : [ReturnType<Extract<T, (...args: any) => any>>]
-): Extract<T, (...args: any) => any> {
+    : [ReturnType<Extract<T, AnyFunction>>]
+): Extract<T, AnyFunction> {
   return spy<T>((() => args[0]) as any) as any;
 }
-export function throws<T>(err: any): Extract<T, (...args: any) => any> {
+export function throws<T>(err: any): Extract<T, AnyFunction> {
   return spy<T>((() => {
     throw err;
   }) as any as any) as any;
 }
 export function resolves<T>(
   ...args: PromiseType<
-    ReturnType<Extract<T, (...args: any) => any>>
+    ReturnType<Extract<T, AnyFunction>>
   > extends void
     ? []
-    : [PromiseType<ReturnType<Extract<T, (...args: any) => any>>>]
-): Extract<T, (...args: any) => any> {
+    : [PromiseType<ReturnType<Extract<T, AnyFunction>>>]
+): Extract<T, AnyFunction> {
   return spy<T>((() => Promise.resolve(args[0])) as any) as any;
 }
-export function rejects<T>(error: any): Extract<T, (...args: any) => any> {
+export function rejects<T>(error: any): Extract<T, AnyFunction> {
   return spy<T>((() => Promise.reject(error)) as any) as any;
 }
 
-function getFunctionCalls(fn: (...args: any) => any) {
+function getFunctionCalls(fn: AnyFunction) {
   const functionCalls = calls.get(fn as any);
   if (!functionCalls)
     throw Error("argument passed into 'callsOf' is not a function mock");
   return functionCalls;
 }
 
-export function callsOf<F>(
-  fn: F
-): Parameters<Extract<F, (...args: any) => any>>[] {
+export function callsOf<F>(fn: F): Parameters<Extract<F, AnyFunction>>[] {
   return getFunctionCalls(fn as any).map((call) => call.arguments) as any;
 }
 
-function getOrderedCalls(...functions: Array<(...args: any) => any>) {
+function getOrderedCalls(...functions: AnyFunction[]) {
   return functions
     .map(getFunctionCalls)
     .flat()
     .sort((a, b) => a.id - (b as any).id);
 }
 
-export function callsOfAll(...functions: Array<(...args: any) => any>) {
+export function callsOfAll(...functions: AnyFunction[]) {
   return getOrderedCalls(...functions).map((call) => [
     call.function,
     ...call.arguments,
   ]);
 }
 
-export function callOrderOf(
-  ...functions: Array<(...args: any) => any>
-): Array<(...args: any) => any> {
+export function callOrderOf(...functions: AnyFunction[]): AnyFunction[] {
   return getOrderedCalls(...functions).map((call) => call.function);
 }
 
@@ -110,7 +108,7 @@ type Details = {
   callCount: number;
 };
 
-export function callDetailsOf(fn: (...args: any) => any): Details {
+export function callDetailsOf(fn: AnyFunction): Details {
   const details = callsOf(fn);
   return {
     called: details.length > 0,
