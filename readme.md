@@ -216,7 +216,7 @@ expect(callOrderOf(math.add, math.multiply)).toStrictEqual([
 Used to simply verify the number of times a single function was called.
 
 ```ts
-import { mock, spy, callsOf } from "testtriple";
+import { mock, spy, callDetailsOf } from "testtriple";
 
 const math = mock<Calulator>({
   add: spy(),
