@@ -1,4 +1,6 @@
-import { PromiseType } from "utility-types";
+type AsyncFunction = (...args: any[]) => Promise<any>;
+
+type AsyncReturnType<T extends AsyncFunction> = Awaited<ReturnType<T>>;
 
 type AnyFunction = (...args: any[]) => any;
 
@@ -62,11 +64,9 @@ export function throws<T>(err: any): Extract<T, AnyFunction> {
   }) as any as any) as any;
 }
 export function resolves<T>(
-  ...args: PromiseType<
-    ReturnType<Extract<T, AnyFunction>>
-  > extends void
+  ...args: AsyncReturnType<Extract<T, AnyFunction>> extends void
     ? []
-    : [PromiseType<ReturnType<Extract<T, AnyFunction>>>]
+    : [AsyncReturnType<Extract<T, AnyFunction>>]
 ): Extract<T, AnyFunction> {
   return spy<T>((() => Promise.resolve(args[0])) as any) as any;
 }
