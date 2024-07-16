@@ -32,9 +32,6 @@
     "email": "patrik.stutz@gmail.com"
   },
   "license": "MIT",
-  "dependencies": {
-    "utility-types": "^3.10.0"
-  },
   "devDependencies": {
     "@types/jest": "^29.5.9",
     "@types/node": "^20.9.3",

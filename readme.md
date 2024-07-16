@@ -141,7 +141,7 @@ console.log(bob.getAge()); // throws "he's dead, jim!"
 
 ## verifying calls
 
-testtriple doesn't do any assertions. But it gives you access to function calls and their parameters using `callsOf`, `callsOfAll` and `callOrderOf`. You can then assert these calls using the test runner of your choice.
+testtriple doesn't do any assertions. But it gives you access to function calls and their parameters using `callsOf`, `callsOfAll`, `callOrderOf`, and `callDetailsOf`. You can then assert these calls using the test runner of your choice.
 
 ### callsOf(fn)
 
@@ -209,6 +209,28 @@ expect(callOrderOf(math.add, math.multiply)).toStrictEqual([
   math.multiply,
   math.add,
 ]);
+```
+
+### callDetailsOf(fn)
+
+Used to simply verify the number of times a single function was called.
+
+```ts
+import { mock, spy, callDetailsOf } from "testtriple";
+
+const math = mock<Calulator>({
+  add: spy(),
+  multiply: spy(),
+});
+
+math.add(1, 2);
+math.multiply(2, 2);
+math.add(3, 8);
+
+const { called, callCount } = callDetailsOf(math.add);
+
+expect(called).toBe(true);
+expect(callCount).toBe(2);
 ```
 
 ## comparison to `testdouble` and `@fluffy-spoon/substitute`
