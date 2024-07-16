@@ -1,8 +1,8 @@
-type AsyncFunction = (...args: any[]) => Promise<any>;
-
-type AsyncReturnType<T extends AsyncFunction> = Awaited<ReturnType<T>>;
-
 type AnyFunction = (...args: any[]) => any;
+
+type PromiseType<T extends Promise<any>> = T extends Promise<infer U>
+  ? U
+  : never;
 
 type FunctionCall = {
   id: number;
@@ -64,9 +64,9 @@ export function throws<T>(err: any): Extract<T, AnyFunction> {
   }) as any as any) as any;
 }
 export function resolves<T>(
-  ...args: AsyncReturnType<Extract<T, AnyFunction>> extends void
+  ...args: PromiseType<ReturnType<Extract<T, AnyFunction>>> extends void
     ? []
-    : [AsyncReturnType<Extract<T, AnyFunction>>]
+    : [PromiseType<ReturnType<Extract<T, AnyFunction>>>]
 ): Extract<T, AnyFunction> {
   return spy<T>((() => Promise.resolve(args[0])) as any) as any;
 }
