@@ -1,6 +1,6 @@
 {
   "name": "testtriple",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "A handy little mocking library inspired by testdouble and @fluffy-spoon/substitute",
   "main": "lib/index.js",
   "scripts": {
