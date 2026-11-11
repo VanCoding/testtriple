@@ -1,6 +1,6 @@
 {
   "name": "testtriple",
-  "version": "4.0.0-preview.1",
+  "version": "4.0.0",
   "description": "A handy little mocking library inspired by testdouble and @fluffy-spoon/substitute",
   "main": "lib/index.cjs",
   "module": "lib/index.mjs",
