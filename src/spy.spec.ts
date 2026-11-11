@@ -1,5 +1,4 @@
 import {
-  mock,
   spy,
   callsOf,
   returns,
@@ -9,54 +8,10 @@ import {
   callOrderOf,
   callsOfAll,
   callDetailsOf,
-} from ".";
-
-type Human = {
-  name: string;
-  birthDate: Date;
-  getAge: () => number;
-  getAgeAsync: () => Promise<number>;
-  setName: (name: string) => void;
-  setNameAsync: (name: string) => void;
-  mother: Human;
-  father: Human;
-  getFather: () => Human;
-};
-
-describe("mock", () => {
-  it("sets specified properties", () => {
-    const bob = mock<Human>({ name: "bob" });
-    expect(bob.name).toBe("bob");
-  });
-
-  it("infers type when nested", () => {
-    const bob = mock<Human>({
-      father: mock({
-        mother: mock({ name: "helen" }),
-      }),
-    });
-
-    expect(bob.father.mother.name).toBe("helen");
-  });
-
-  it("allows zero arguments", () => {
-    mock<Human>();
-  });
-
-  it("supports inferred mock inside returns", () => {
-    mock<Human>({
-      getFather: returns(mock()),
-    });
-  });
-
-  it("sets the name of functions correclty", () => {
-    const bob = mock<Human>({
-      getAge: returns(10),
-    });
-
-    expect(bob.getAge.name).toBe("getAge");
-  });
-});
+} from "./spy";
+import { createMockable, swap } from "./mockable";
+import { Human } from "./test-types";
+import { mock } from "./mock";
 
 describe("spy", () => {
   it("returns", () => {
@@ -222,6 +177,14 @@ describe("callsOf, callsOfAll, callOrderOf", () => {
     const secondArgOfFirstCall: number = callsOf(fn)[0][1];
     expect(firstArgOfSecondCall).toBe("2");
     expect(secondArgOfFirstCall).toBe(1);
+  });
+
+  it("uses the original function, not the proxy", () => {
+    const proxy = createMockable({ setCount: (count: number) => {} });
+    swap(proxy, mock({ setCount: spy() }));
+    proxy.setCount(3);
+
+    expect(callsOf(proxy.setCount)).toStrictEqual([[3]]);
   });
 });
 

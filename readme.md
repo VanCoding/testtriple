@@ -233,6 +233,65 @@ expect(called).toBe(true);
 expect(callCount).toBe(2);
 ```
 
+## mockables (experimental)
+
+Sometimes there are objects that already exist when starting the test. In those cases, you can't really mock them without mocking the whole file.
+Mockables allow creating objects that can be replaced with a mock at test time.
+
+```ts
+const service = createMockable({
+  doWork: ()=>{
+    console.log("foo")
+  }
+})
+
+service.doWork() // logs foo
+
+swap(service,{
+  doWork: ()=>{
+    console.log("bar")
+  }
+})
+
+service.doWork() // logs bar
+```
+
+This even works, if you store a nested function in a variable and call swap after that:
+
+
+```ts
+const service = createMockable({
+  doWork: ()=>{
+    console.log("foo")
+  }
+})
+const doWork = service.doWork;
+
+doWork() // logs foo
+
+swap(service,{
+  doWork: ()=>{
+    console.log("bar")
+  }
+})
+
+doWork() // logs bar
+```
+
+Getting calls still works with this
+
+```ts
+const service = createMockable<{setValue: (value: number)=>void}>({
+  setValue: returns()
+})
+
+service.setValue(1)
+
+console.log(callsOf(service.setValue)) // logs [[1]]
+```
+
+
+
 ## comparison to `testdouble` and `@fluffy-spoon/substitute`
 
 While testtriple was inspired by the mentioned libraries, it does not mean that it focuses on the same core features. Instead, I tried to address some of weaknesses in those libraries. Specifically the creation of nested mocks in one go, without specifying the types for everything, and infer them instead. That's why the quick example features this functionality.
