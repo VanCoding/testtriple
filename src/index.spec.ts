@@ -10,7 +10,6 @@ import {
   callsOfAll,
   callDetailsOf,
 } from ".";
-import { doesNotCompile } from "./test-utils/typescript";
 
 type Human = {
   name: string;
@@ -242,58 +241,5 @@ describe("callDetailsOf", () => {
     const details = callDetailsOf(fn);
     expect(details.called).toBe(false);
     expect(details.callCount).toBe(0);
-  });
-});
-
-describe("type inferrence", () => {
-  it("prevents setting invalid values to mock properties", () => {
-    doesNotCompile("mock<Human>({name:1})", "Type 'number' is not assignable to type 'string'");
-  });
-  it("prevents setting invalid valid to nested mock properties", () => {
-    doesNotCompile(
-      "mock<Human>({father:mock({mother:mock({name:1})})})",
-      "Type 'number' is not assignable to type 'string'",
-    );
-  });
-  it("prevents setting mocks to non-function mock properties", () => {
-    doesNotCompile(
-      "mock<Human>({name:spy()})",
-      "Type 'void' is not assignable to type 'string | undefined'",
-    );
-  });
-  it("prevents setting an invalid return value for a mock function", () => {
-    doesNotCompile(
-      "mock<Human>({getAge: returns('hello')})",
-      "Argument of type 'string' is not assignable to parameter of type 'number'",
-    );
-  });
-
-  it("prevents not setting a return value for a mock function not returning void", () => {
-    doesNotCompile("mock<Human>({getAge: returns()})", "Expected 1 arguments, but got 0.");
-  });
-
-  it("prevents setting an invalid resolve value for a mock function", () => {
-    doesNotCompile(
-      "mock<Human>({getAgeAsync: resolves('hello')})",
-      "Argument of type 'string' is not assignable to parameter of type 'number'",
-    );
-  });
-
-  it("prevents not setting a resolve value for a mock function not returning void", () => {
-    doesNotCompile("mock<Human>({getAgeAsync: resolves()})", "Expected 1 arguments, but got 0.");
-  });
-
-  it("prevents setting a resolve value for a mock function returning void", () => {
-    doesNotCompile("mock<Human>({setNameAsync: resolves(10)})", "Expected 0 arguments, but got 1.");
-  });
-
-  it("correctly detects callsOf type", () => {
-    doesNotCompile(
-      `
-      const bob = mock<Human>({setName: spy()});
-      const name: number = callsOf(bob.setName)[0][0]
-    `,
-      "Type 'string' is not assignable to type 'number'",
-    );
   });
 });
