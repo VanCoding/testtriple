@@ -1,9 +1,23 @@
 {
-    inputs.nixpks.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    inputs.flake-utils.url = "github:numtide/flake-utils";
-    outputs = {nixpkgs,flake-utils,...}: flake-utils.lib.eachDefaultSystem (system: with import nixpkgs {inherit system;}; {
-        devShells.default = mkShell {
-            buildInputs = [nodejs_26];
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    treefmt-nix.url = "github:numtide/treefmt-nix";
+  };
+  outputs =
+    inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = [ "x86_64-linux" ];
+      imports = [
+        ./nix/treefmt.nix
+      ];
+      perSystem = { pkgs, config, ... }: {
+        devShells.default = pkgs.mkShell {
+          buildInputs = [
+            pkgs.nodejs_26
+            config.treefmt.build.wrapper
+          ];
         };
-    });
+      };
+    };
 }

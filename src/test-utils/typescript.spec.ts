@@ -8,7 +8,7 @@ describe("TypeScript test utilities", () => {
   it("reports errors for invalid code", () => {
     doesNotCompile(
       "mock<Human>({ name: 42 });",
-      "Type 'number' is not assignable to type 'string'"
+      "Type 'number' is not assignable to type 'string'",
     );
   });
 });

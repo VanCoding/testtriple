@@ -1,8 +1,6 @@
 type AnyFunction = (...args: any[]) => any;
 
-type PromiseType<T extends Promise<any>> = T extends Promise<infer U>
-  ? U
-  : never;
+type PromiseType<T extends Promise<any>> = T extends Promise<infer U> ? U : never;
 
 type FunctionCall = {
   id: number;
@@ -14,9 +12,7 @@ type FunctionCall = {
 let NEXT_CALL_ID = 0;
 let calls: WeakMap<AnyFunction, FunctionCall[]> = new WeakMap();
 
-type ExtractOrVoid<T, Target> = Extract<T, Target> extends never
-  ? void
-  : Extract<T, Target>;
+type ExtractOrVoid<T, Target> = Extract<T, Target> extends never ? void : Extract<T, Target>;
 
 export function mock<T>(values: Partial<Extract<T, {}>> = {}) {
   for (const key in values) {
@@ -41,9 +37,7 @@ export function spy<T = () => void>(
     });
 
     const fn =
-      callIndex < functions.length
-        ? functions[callIndex]
-        : functions[functions.length - 1];
+      callIndex < functions.length ? functions[callIndex] : functions[functions.length - 1];
     if (!fn) return;
     return (fn as any)(...args);
   };
@@ -76,8 +70,7 @@ export function rejects<T>(error: any): Extract<T, AnyFunction> {
 
 function getFunctionCalls(fn: AnyFunction) {
   const functionCalls = calls.get(fn as any);
-  if (!functionCalls)
-    throw Error("argument passed into 'callsOf' is not a function mock");
+  if (!functionCalls) throw Error("argument passed into 'callsOf' is not a function mock");
   return functionCalls;
 }
 
@@ -93,10 +86,7 @@ function getOrderedCalls(...functions: AnyFunction[]) {
 }
 
 export function callsOfAll(...functions: AnyFunction[]) {
-  return getOrderedCalls(...functions).map((call) => [
-    call.function,
-    ...call.arguments,
-  ]);
+  return getOrderedCalls(...functions).map((call) => [call.function, ...call.arguments]);
 }
 
 export function callOrderOf(...functions: AnyFunction[]): AnyFunction[] {

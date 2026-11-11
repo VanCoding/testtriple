@@ -20,13 +20,12 @@ function getDiagnostics(code: string): string[] {
   const virtualFileName = resolve("src/__typecheck__.ts");
   const sourceDirectory = resolve("src");
   const configPath = resolve("tsconfig.json");
-  const isVirtualFile = (fileName: string) =>
-    resolve(fileName) === virtualFileName;
+  const isVirtualFile = (fileName: string) => resolve(fileName) === virtualFileName;
   const api = new API({
     cwd: process.cwd(),
     fs: {
       fileExists: (fileName) => isVirtualFile(fileName) || undefined,
-      readFile: (fileName) => isVirtualFile(fileName) ? allCode : undefined,
+      readFile: (fileName) => (isVirtualFile(fileName) ? allCode : undefined),
       getAccessibleEntries: (directoryName) => {
         if (resolve(directoryName) !== sourceDirectory) {
           return undefined;
@@ -38,9 +37,7 @@ function getDiagnostics(code: string): string[] {
             ...entries.filter((entry) => entry.isFile()).map((entry) => entry.name),
             "__typecheck__.ts",
           ],
-          directories: entries
-            .filter((entry) => entry.isDirectory())
-            .map((entry) => entry.name),
+          directories: entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name),
         };
       },
     },
