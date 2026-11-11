@@ -239,55 +239,53 @@ Sometimes there are objects that already exist when starting the test. In those 
 Mockables allow creating objects that can be replaced with a mock at test time.
 
 ```ts
+import { createMockable, swap } from "testtriple";
+
 const service = createMockable({
-  doWork: ()=>{
-    console.log("foo")
-  }
-})
+  getValue: () => "foo",
+});
 
-service.doWork() // logs foo
+expect(service.getValue()).toBe("foo");
 
-swap(service,{
-  doWork: ()=>{
-    console.log("bar")
-  }
-})
+swap(service, {
+  getValue: () => "bar",
+});
 
-service.doWork() // logs bar
+expect(service.getValue()).toBe("bar");
 ```
 
 This even works, if you store a nested function in a variable and call swap after that:
 
 
 ```ts
+import { createMockable, swap } from "testtriple";
+
 const service = createMockable({
-  doWork: ()=>{
-    console.log("foo")
-  }
-})
-const doWork = service.doWork;
+  getValue: () => "foo",
+});
+const getValue = service.getValue;
 
-doWork() // logs foo
+expect(getValue()).toBe("foo");
 
-swap(service,{
-  doWork: ()=>{
-    console.log("bar")
-  }
-})
+swap(service, {
+  getValue: () => "bar",
+});
 
-doWork() // logs bar
+expect(getValue()).toBe("bar");
 ```
 
 Getting calls still works with this
 
 ```ts
-const service = createMockable<{setValue: (value: number)=>void}>({
-  setValue: returns()
-})
+import { callsOf, createMockable, returns } from "testtriple";
 
-service.setValue(1)
+const service = createMockable<{ setValue: (value: number) => void }>({
+  setValue: returns(),
+});
 
-console.log(callsOf(service.setValue)) // logs [[1]]
+service.setValue(1);
+
+expect(callsOf(service.setValue)).toStrictEqual([[1]]);
 ```
 
 
