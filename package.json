@@ -2,10 +2,24 @@
   "name": "testtriple",
   "version": "3.1.1",
   "description": "A handy little mocking library inspired by testdouble and @fluffy-spoon/substitute",
-  "main": "lib/index.js",
+  "main": "lib/index.cjs",
+  "module": "lib/index.mjs",
+  "types": "lib/index.d.cts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./lib/index.d.mts",
+        "default": "./lib/index.mjs"
+      },
+      "require": {
+        "types": "./lib/index.d.cts",
+        "default": "./lib/index.cjs"
+      }
+    }
+  },
   "scripts": {
-    "test": "vitest run",
-    "build": "tsc && rm lib/*.spec.js && rm -r lib/test-utils",
+    "test": "tsc --noEmit &&vitest run",
+    "build": "tsdown src/index.ts --format cjs,esm --dts --out-dir lib --clean",
     "clean": "rm -rdf lib && rm -f testtriple-*.tgz",
     "prepack": "npm run test && npm run clean && npm run build"
   },
@@ -38,6 +52,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^26.6.6",
+    "tsdown": "^0.23.7",
     "typescript": "^7.0.2",
     "vitest": "^5.1.0"
   }
