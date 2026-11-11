@@ -243,6 +243,7 @@ import {
   createMockable,
   overrideMockable,
   partiallyOverrideMockable,
+  resetAllMockables,
   resetMockable,
 } from "testtriple";
 
@@ -278,9 +279,6 @@ partiallyOverrideMockable(service, {
 expect(service.getValue()).toBe("bar");
 expect(service.getName()).toBe("service");
 expect(service.getTheme()).toBe("dark");
-
-resetMockable(service);
-expect(service.getValue()).toBe("foo");
 ```
 
 This even works, if you store a nested function in a variable and call overrideMockable after that:
@@ -315,6 +313,42 @@ const service = createMockable<{ setValue: (value: number) => void }>({
 service.setValue(1);
 
 expect(callsOf(service.setValue)).toStrictEqual([[1]]);
+```
+
+### resetting mockables
+
+To reset a single mockable:
+
+```ts
+import { createMockable, overrideMockable, resetMockable } from "testtriple";
+
+const service = createMockable({
+  getValue: () => "foo",
+});
+
+overrideMockable(service, {
+  getValue: () => "bar",
+});
+
+resetMockable(service);
+expect(service.getValue()).toBe("foo");
+```
+
+To clear all overrides at once:
+
+```ts
+import { createMockable, overrideMockable, resetAllMockables } from "testtriple";
+
+const first = createMockable({ getValue: () => "first" });
+const second = createMockable({ getValue: () => "second" });
+
+overrideMockable(first, { getValue: () => "changed-first" });
+overrideMockable(second, { getValue: () => "changed-second" });
+
+resetAllMockables();
+
+expect(first.getValue()).toBe("first");
+expect(second.getValue()).toBe("second");
 ```
 
 

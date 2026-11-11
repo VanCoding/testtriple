@@ -1,5 +1,5 @@
 const proxies: WeakMap<object, () => unknown> = new WeakMap();
-const mocks: WeakMap<object, object> = new WeakMap();
+let mocks: WeakMap<object, object> = new WeakMap();
 
 type DeepPartial<T> = T extends (...args: infer Args) => infer Return
   ? (...args: Args) => Return
@@ -112,6 +112,10 @@ export const partiallyOverrideMockable = <T extends object>(proxy: T, mock: Deep
 
 export const resetMockable = <T extends object>(proxy: T) => {
   mocks.delete(proxy);
+};
+
+export const resetAllMockables = () => {
+  mocks = new WeakMap();
 };
 
 const mergePartial = <T>(value: T, partial: DeepPartial<T>): T => {
