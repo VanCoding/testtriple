@@ -110,6 +110,10 @@ export const partiallyOverrideMockable = <T extends object>(proxy: T, mock: Deep
   overrideMockable(proxy, mergePartial(getOriginal(proxy), mock));
 };
 
+export const resetMockable = <T extends object>(proxy: T) => {
+  mocks.delete(proxy);
+};
+
 const mergePartial = <T>(value: T, partial: DeepPartial<T>): T => {
   if (!isPlainObject(value) || !isPlainObject(partial)) {
     return partial as T;

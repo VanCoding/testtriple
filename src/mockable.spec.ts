@@ -4,6 +4,7 @@ import {
   getOriginal,
   overrideMockable,
   partiallyOverrideMockable,
+  resetMockable,
 } from "./mockable";
 
 describe("createMockableFactory", () => {
@@ -106,6 +107,17 @@ describe("createMockable", () => {
     expect(getOriginal(proxy)).not.toBe(adapter);
     expect(getOriginal(proxy).nested).not.toBe(adapter.nested);
     expect(getOriginal(proxy)).toEqual({ nested: { value: 2, name: "original" } });
+  });
+
+  it("resets overrides to the initial value", () => {
+    const adapter = { value: 1 };
+    const proxy = createMockable(adapter);
+
+    partiallyOverrideMockable(proxy, { value: 2 });
+    resetMockable(proxy);
+
+    expect(getOriginal(proxy.value)).toBe(1);
+    expect(getOriginal(proxy)).toBe(adapter);
   });
 
   it("returns non-proxy values unchanged", () => {

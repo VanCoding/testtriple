@@ -243,6 +243,7 @@ import {
   createMockable,
   overrideMockable,
   partiallyOverrideMockable,
+  resetMockable,
 } from "testtriple";
 
 const service = createMockable({
@@ -277,6 +278,9 @@ partiallyOverrideMockable(service, {
 expect(service.getValue()).toBe("bar");
 expect(service.getName()).toBe("service");
 expect(service.getTheme()).toBe("dark");
+
+resetMockable(service);
+expect(service.getValue()).toBe("foo");
 ```
 
 This even works, if you store a nested function in a variable and call overrideMockable after that:
