@@ -1,8 +1,10 @@
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
+  cacheDir: "../node_modules/.vitest",
   test: {
     globals: true,
-    include: ["src/**/*.spec.ts"],
+    root: "./src",
+    include: [`**/*.spec.ts`],
   },
 });
