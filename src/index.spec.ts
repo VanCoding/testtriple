@@ -10,7 +10,7 @@ import {
   callsOfAll,
   callDetailsOf,
 } from ".";
-import { spawnSync } from "child_process";
+import { doesNotCompile } from "./test-utils/typescript";
 
 type Human = {
   name: string;
@@ -314,30 +314,3 @@ describe("type inferrence", () => {
     );
   });
 });
-
-function doesNotCompile(code: string, message: string) {
-  const allCode = `
-  import { mock, spy, callsOf, returns, throws, resolves, rejects } from "./src";
-  type Human = {
-    name: string;
-    birthDate: Date;
-    getAge: () => number;
-    getAgeAsync: () => Promise<number>;
-    setName: (name: string) => void;
-    setNameAsync: ()=>Promise<void>;
-    mother: Human;
-    father: Human;
-  };
-  ${code}
-  `;
-  console.log(allCode);
-  const result = spawnSync("ts-node", [
-    "--project",
-    "tsconfig.json",
-    "--eval",
-    allCode,
-  ]);
-  const output = result.output.join("");
-  console.log(result.error, output);
-  expect(output).toContain(message);
-}
