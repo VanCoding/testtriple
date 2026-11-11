@@ -9,7 +9,7 @@ import {
   callsOfAll,
   callDetailsOf,
 } from "./spy";
-import { createMockable, swap } from "./mockable";
+import { createMockable, overrideMockable } from "./mockable";
 import { Human } from "./test-types";
 import { mock } from "./mock";
 
@@ -181,7 +181,7 @@ describe("callsOf, callsOfAll, callOrderOf", () => {
 
   it("uses the original function, not the proxy", () => {
     const proxy = createMockable({ setCount: (count: number) => {} });
-    swap(proxy, mock({ setCount: spy() }));
+    overrideMockable(proxy, mock({ setCount: spy() }));
     proxy.setCount(3);
 
     expect(callsOf(proxy.setCount)).toStrictEqual([[3]]);

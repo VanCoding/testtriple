@@ -1,4 +1,4 @@
-import { createMockable, createMockableFactory, getOriginal, swap } from "./mockable";
+import { createMockable, createMockableFactory, getOriginal, overrideMockable } from "./mockable";
 
 describe("createMockableFactory", () => {
   it("returns proxy if condition is true", () => {
@@ -63,7 +63,7 @@ describe("createMockable", () => {
     const proxy = createMockable(adapter);
     const nestedProxy = proxy.nested;
 
-    swap(proxy, mock);
+    overrideMockable(proxy, mock);
 
     expect(getOriginal(proxy)).toBe(mock);
     expect(getOriginal(nestedProxy)).toBe(mock.nested);
@@ -79,7 +79,7 @@ describe("createMockable", () => {
 
     const getValue = mockable.nested.getValue;
 
-    swap(mockable, {
+    overrideMockable(mockable, {
       nested: {
         getValue: (): number => 2,
       },

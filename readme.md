@@ -239,7 +239,7 @@ Sometimes there are objects that already exist when starting the test. In those 
 Mockables allow creating objects that can be replaced with a mock at test time.
 
 ```ts
-import { createMockable, swap } from "testtriple";
+import { createMockable, overrideMockable } from "testtriple";
 
 const service = createMockable({
   getValue: () => "foo",
@@ -247,18 +247,18 @@ const service = createMockable({
 
 expect(service.getValue()).toBe("foo");
 
-swap(service, {
+overrideMockable(service, {
   getValue: () => "bar",
 });
 
 expect(service.getValue()).toBe("bar");
 ```
 
-This even works, if you store a nested function in a variable and call swap after that:
+This even works, if you store a nested function in a variable and call overrideMockable after that:
 
 
 ```ts
-import { createMockable, swap } from "testtriple";
+import { createMockable, overrideMockable } from "testtriple";
 
 const service = createMockable({
   getValue: () => "foo",
@@ -267,7 +267,7 @@ const getValue = service.getValue;
 
 expect(getValue()).toBe("foo");
 
-swap(service, {
+overrideMockable(service, {
   getValue: () => "bar",
 });
 

@@ -94,7 +94,7 @@ export const getOriginal = <T>(proxy: T): T => {
   return getValue() as T;
 };
 
-export const swap = <T extends object>(proxy: T, mock: T) => {
+export const overrideMockable = <T extends object>(proxy: T, mock: T) => {
   mocks.set(proxy, mock);
 };
 
