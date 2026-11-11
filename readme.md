@@ -239,7 +239,11 @@ Sometimes there are objects that already exist when starting the test. In those 
 Mockables allow creating objects that can be replaced with a mock at test time.
 
 ```ts
-import { createMockable, overrideMockable } from "testtriple";
+import {
+  createMockable,
+  overrideMockable,
+  partiallyOverrideMockable,
+} from "testtriple";
 
 const service = createMockable({
   getValue: () => "foo",
@@ -252,6 +256,27 @@ overrideMockable(service, {
 });
 
 expect(service.getValue()).toBe("bar");
+```
+
+You can also override selected properties recursively. Nested plain objects are merged into new objects, leaving the initial objects unchanged; arrays and non-plain objects are replaced.
+
+```ts
+const service = createMockable({
+  getValue: () => "foo",
+  getName: () => "service",
+  config: { theme: "light", locale: "en" },
+  getTheme() {
+    return this.config.theme;
+  },
+});
+
+partiallyOverrideMockable(service, {
+  getValue: () => "bar",
+  config: { theme: "dark" },
+});
+expect(service.getValue()).toBe("bar");
+expect(service.getName()).toBe("service");
+expect(service.getTheme()).toBe("dark");
 ```
 
 This even works, if you store a nested function in a variable and call overrideMockable after that:

@@ -1,6 +1,14 @@
 const proxies: WeakMap<object, () => unknown> = new WeakMap();
 const mocks: WeakMap<object, object> = new WeakMap();
 
+type DeepPartial<T> = T extends (...args: infer Args) => infer Return
+  ? (...args: Args) => Return
+  : T extends readonly unknown[]
+    ? T
+    : T extends object
+      ? { [P in keyof T]?: DeepPartial<T[P]> }
+      : T;
+
 export const createMockableFactory =
   (condition: () => boolean) =>
   <T extends object>(value: T): T => {
@@ -96,6 +104,39 @@ export const getOriginal = <T>(proxy: T): T => {
 
 export const overrideMockable = <T extends object>(proxy: T, mock: T) => {
   mocks.set(proxy, mock);
+};
+
+export const partiallyOverrideMockable = <T extends object>(proxy: T, mock: DeepPartial<T>) => {
+  overrideMockable(proxy, mergePartial(getOriginal(proxy), mock));
+};
+
+const mergePartial = <T>(value: T, partial: DeepPartial<T>): T => {
+  if (!isPlainObject(value) || !isPlainObject(partial)) {
+    return partial as T;
+  }
+
+  const result: Record<PropertyKey, unknown> = { ...value };
+  for (const property of Reflect.ownKeys(partial)) {
+    if (!Object.getOwnPropertyDescriptor(partial, property)?.enumerable) {
+      continue;
+    }
+
+    const partialValue = partial[property];
+    const valueProperty = value[property];
+    result[property] =
+      isPlainObject(valueProperty) && isPlainObject(partialValue)
+        ? mergePartial(valueProperty, partialValue)
+        : partialValue;
+  }
+  return result as T;
+};
+
+const isPlainObject = (value: unknown): value is Record<PropertyKey, unknown> => {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return false;
+  }
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
 };
 
 function isObject(value: unknown): value is object {
